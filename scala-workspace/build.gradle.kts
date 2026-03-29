@@ -13,6 +13,12 @@ val scalaVersion = "3.3.6"
 val scalaFxVersion = "21.0.0-R32"
 val scalaTestVersion = "3.2.19"
 
+val jplJarPath = System.getenv("JPL_JAR")
+	?: error("Environment variable JPL_JAR is not set")
+
+val jplLibDir = System.getenv("JPL_LIB_DIR")
+	?: error("Environment variable JPL_LIB_DIR is not set")
+
 javafx {
 	version = "21.0.2"
 	modules(
@@ -25,6 +31,7 @@ javafx {
 dependencies {
 	implementation("org.scala-lang:scala3-library_3:$scalaVersion")
 	implementation("org.scalafx:scalafx_3:$scalaFxVersion")
+	implementation(files(jplJarPath))
 
 	testImplementation("org.scalatest:scalatest_3:$scalaTestVersion")
 	testRuntimeOnly("org.junit.platform:junit-platform-engine:1.10.2")
@@ -39,6 +46,9 @@ java {
 
 application {
 	mainClass.set("app.Main")
+	applicationDefaultJvmArgs = listOf(
+		"-Djava.library.path=$jplLibDir"
+	)
 }
 
 tasks.withType<ScalaCompile>().configureEach {
@@ -49,4 +59,5 @@ tasks.withType<ScalaCompile>().configureEach {
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()
+	systemProperty("java.library.path", jplLibDir)
 }

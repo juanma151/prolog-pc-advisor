@@ -1,8 +1,9 @@
 // vim: filetype=scala: tabstop=3: shiftwidth=3: noexpandtab
 package app.prolog
 
+import app.model.ValidationResult
 import app.ui.{UiField, UiOption}
-import org.jpl7.{Atom, Query, Term}
+import org.jpl7.{Atom, Query, Term, Variable}
 
 import java.nio.file.Paths
 
@@ -28,6 +29,36 @@ final class JplPrologGateway extends PrologGateway {
 		}
 	}
 
+	override def validateBuild(
+										cpuId: String,
+										motherboardId: String,
+										ramId: String
+									): ValidationResult = {
+		consultFile("catalog.pl")
+		consultFile("rules.pl")
+
+		val query = new Query(
+			"valid_build",
+			Array[Term](
+				new Atom(cpuId),
+				new Atom(motherboardId),
+				new Atom(ramId)
+			)
+		)
+
+		if (query.hasSolution) {
+			ValidationResult(
+				isValid = true,
+				message = "Configuration is valid"
+			)
+		} else {
+			ValidationResult(
+				isValid = false,
+				message = "Configuration is not valid"
+			)
+		}
+	}
+
 	private def consultFile(fileName: String): Unit = {
 		val prologFile = Paths
 			.get("src", "main", "resources", "prolog", fileName)
@@ -48,7 +79,7 @@ final class JplPrologGateway extends PrologGateway {
 	private def loadOptionsForField(fieldId: String): Seq[UiOption] = {
 		val optionsQuery = new Query(
 			"field_options",
-			Array[Term](new Atom(fieldId), new org.jpl7.Variable("Options"))
+			Array[Term](new Atom(fieldId), new Variable("Options"))
 		)
 
 		if (!optionsQuery.hasSolution) {

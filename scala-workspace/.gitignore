@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Metals / Bloop / Scala CLI related
+.bloop/
+.metals/
+.scala-build/
+
+# IntelliJ local
+.idea/
+*.iml
+
+# VSCode local
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+

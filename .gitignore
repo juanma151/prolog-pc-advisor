@@ -1,0 +1,51 @@
+# =========================
+# Nix
+# =========================
+/result
+/result-*
+/.direnv/
+
+# =========================
+# IDEs / editores (global)
+# =========================
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# Vim / Neovim
+# =========================
+*.swp
+*.swo
+*.swn
+*.un~
+Session.vim
+Sessionx.vim
+
+# =========================
+# Backups / temporales
+# =========================
+*~
+*.bak
+*.tmp
+*.temp
+*.orig
+*.rej
+
+# =========================
+# Sistemas operativos
+# =========================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux / NFS / genéricos
+.nfs*
+

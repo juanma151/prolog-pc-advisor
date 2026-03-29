@@ -40,4 +40,21 @@ class UiFieldSpec extends AnyFunSuite {
 		assert(field.label == "RAM")
 		assert(field.order == 3)
 	}
+
+	test("UiField should preserve its options") {
+		val field = UiField(
+			id = "cpu",
+			controlType = "combo",
+			label = "CPU",
+			order = 1,
+			options = Seq(
+				UiOption("ryzen7_7700", "AMD Ryzen 7 7700"),
+				UiOption("i5_14600k", "Intel Core i5-14600K")
+			)
+		)
+
+		assert(field.options.length == 2)
+		assert(field.options.head.id == "ryzen7_7700")
+		assert(field.options.head.label == "AMD Ryzen 7 7700")
+	}
 }

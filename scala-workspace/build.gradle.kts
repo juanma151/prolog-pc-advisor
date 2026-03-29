@@ -11,6 +11,7 @@ repositories {
 
 val scalaVersion = "3.3.6"
 val scalaFxVersion = "21.0.0-R32"
+val scalaTestVersion = "3.2.19"
 
 javafx {
 	version = "21.0.2"
@@ -24,6 +25,10 @@ javafx {
 dependencies {
 	implementation("org.scala-lang:scala3-library_3:$scalaVersion")
 	implementation("org.scalafx:scalafx_3:$scalaFxVersion")
+
+	testImplementation("org.scalatest:scalatest_3:$scalaTestVersion")
+	testRuntimeOnly("org.junit.platform:junit-platform-engine:1.10.2")
+	testRuntimeOnly("org.scalatestplus:junit-5-10_3:3.2.19.0")
 }
 
 java {
@@ -42,3 +47,6 @@ tasks.withType<ScalaCompile>().configureEach {
 	)
 }
 
+tasks.named<Test>("test") {
+	useJUnitPlatform()
+}

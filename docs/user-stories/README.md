@@ -4,3 +4,4 @@
 - [US-02 Nix dev shell](./US-02-nix-devshell.md)
 - [US-03 Gradle ScalaFX app](./US-03-gradle-scalafx-app.md)
 - [US-04 Prolog tests](./US-04-prolog-tests.md)
+- [US-05 Scala tests](./US-05-scala-tests.md)

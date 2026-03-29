@@ -1,7 +1,8 @@
 // vim: filetype=scala: tabstop=3: shiftwidth=3: noexpandtab
 package app
 
-import app.ui.{FormRenderer, UiField}
+import app.prolog.JplPrologGateway
+import app.ui.FormRenderer
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
@@ -9,11 +10,8 @@ import scalafx.scene.layout.VBox
 
 object Main extends JFXApp3 {
 	override def start(): Unit = {
-		val fields = Seq(
-			UiField("cpu", "combo", "CPU", 1),
-			UiField("motherboard", "combo", "Motherboard", 2),
-			UiField("ram", "combo", "RAM", 3)
-		)
+		val gateway = new JplPrologGateway()
+		val fields = gateway.loadUiFields()
 
 		stage = new JFXApp3.PrimaryStage {
 			title = "Prolog PC Advisor"

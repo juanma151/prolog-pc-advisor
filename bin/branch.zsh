@@ -163,7 +163,7 @@ function _run () {
 			
 			git checkout main 1>/dev/null 2>&1
 
-			print - "git push origin --delete ${rbranch}"
+			print - "git push origin --delete ${branch}"
 			print - "git branch -D ${branch}"
 			print
 		fi

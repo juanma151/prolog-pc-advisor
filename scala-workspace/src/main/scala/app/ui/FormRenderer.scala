@@ -27,6 +27,7 @@ object FormRenderer {
 			field.controlType match {
 				case "combo" =>
 					new ComboBox[String] {
+						items = ObservableBuffer.from(field.options.map(_.label))
 						promptText = s"Select ${field.label}"
 					}
 

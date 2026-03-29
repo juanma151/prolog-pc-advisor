@@ -8,3 +8,4 @@
 - [US-06 Prolog UI schema](./US-06-prolog-ui-schema.md)
 - [US-07 Dynamic form rendering](./US-07-dynamic-form-rendering.md)
 - [US-08 JPL basic query](./US-08-jpl-basic-query.md)
+- [US-09 Load options from Prolog](./US-09-load-options-from-prolog.md)

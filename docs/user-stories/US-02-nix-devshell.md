@@ -24,3 +24,21 @@ Pendiente más adelante:
 - integrar JPL
 - automatizar ejecución de Gradle en `scala-workspace`
 
+## Validación realizada
+
+Se ha comprobado que `nix develop` expone correctamente las herramientas necesarias.
+
+### Versiones verificadas
+- Java: `21.0.8`
+- Gradle: `8.14.4`
+- Scala: `3.3.6`
+- SWI-Prolog: `9.2.9`
+
+### Comandos ejecutados
+
+```bash
+java --version
+gradle -v
+scala -version
+swipl --version
+```

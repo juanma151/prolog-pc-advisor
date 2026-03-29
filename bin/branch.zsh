@@ -143,9 +143,12 @@ function _run () {
 		print - "\e[91;1mCan't delete the branch because it's not ok.\e[0m"
 		return 100
 	else
-		git checkout main
-		git pull
-		git checkout "${branch}"
+		{
+			git checkout main
+			git pull
+			git checkout "${branch}"
+
+		} 1>/dev/null 2>&1
 		
 		fileChanges=( ${(Aps.\n.)${:-"$( git diff --name-status main "${branch}" )"}} )
 		numChanges=${#fileChanges}
@@ -157,7 +160,8 @@ function _run () {
 			return 100
 		else
 			print - "\e[32mYou can delete the branch with the following commands:\e[0m"
-			git checkout main
+			
+			git checkout main 1>/dev/null 2>&1
 
 			print - "git push origin --delete ${rbranch}"
 			print - "git branch -D ${branch}"

@@ -29,6 +29,7 @@ final class JplPrologGateway extends PrologGateway {
 		}
 	}
 
+	// vim: filetype=scala: tabstop=3: shiftwidth=3: noexpandtab
 	override def validateBuild(
 										cpuId: String,
 										motherboardId: String,
@@ -37,7 +38,7 @@ final class JplPrologGateway extends PrologGateway {
 		consultFile("catalog.pl")
 		consultFile("rules.pl")
 
-		val query = new Query(
+		val validQuery = new Query(
 			"valid_build",
 			Array[Term](
 				new Atom(cpuId),
@@ -46,17 +47,28 @@ final class JplPrologGateway extends PrologGateway {
 			)
 		)
 
-		if (query.hasSolution) {
-			ValidationResult(
-				isValid = true,
-				message = "Configuration is valid"
+		val messageVariable = new Variable("Message")
+		val messageQuery = new Query(
+			"validation_message",
+			Array[Term](
+				new Atom(cpuId),
+				new Atom(motherboardId),
+				new Atom(ramId),
+				messageVariable
 			)
-		} else {
-			ValidationResult(
-				isValid = false,
-				message = "Configuration is not valid"
-			)
-		}
+		)
+
+		val message =
+			if (messageQuery.hasSolution) {
+				messageQuery.oneSolution().get("Message").name
+			} else {
+				"Unknown validation result"
+			}
+
+		ValidationResult(
+			isValid = validQuery.hasSolution,
+			message = message
+		)
 	}
 
 	private def consultFile(fileName: String): Unit = {

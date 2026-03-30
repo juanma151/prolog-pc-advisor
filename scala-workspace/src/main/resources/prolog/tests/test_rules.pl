@@ -21,4 +21,28 @@ test(valid_build_should_succeed_for_matching_parts) :-
 test(valid_build_should_fail_for_mixed_platforms, [fail]) :-
 	valid_build(ryzen7_7700, z790_aorus_elite, ddr5_32_6000).
 
+test(validation_message_should_report_valid_build) :-
+	validation_message(
+		i5_14600k,
+		b760_legacy,
+		ddr4_16_3200,
+		"Configuration is valid"
+	).
+
+test(validation_message_should_report_socket_problem) :-
+	validation_message(
+		ryzen7_7700,
+		z790_aorus_elite,
+		ddr5_32_6000,
+		"CPU and motherboard sockets are not compatible"
+	).
+
+test(validation_message_should_report_ram_problem) :-
+	validation_message(
+		i5_14600k,
+		b760_legacy,
+		ddr5_32_6000,
+		"Motherboard and RAM type are not compatible"
+	).
+
 :- end_tests(rules).

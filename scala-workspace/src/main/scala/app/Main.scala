@@ -26,7 +26,15 @@ object Main extends JFXApp3 {
 					selectedRamId = selectedOption(renderedForm.comboBoxes("ram")).map(_.id)
 				)
 
-				resultLabel.text = result.message
+				val finalMessage =
+					result.suggestion match {
+						case Some(suggestion) =>
+							s"${result.message}\nSuggestion: use ${suggestion.optionLabel} for ${suggestion.fieldId}"
+						case None =>
+							result.message
+					}
+
+				resultLabel.text = finalMessage
 			}
 		}
 

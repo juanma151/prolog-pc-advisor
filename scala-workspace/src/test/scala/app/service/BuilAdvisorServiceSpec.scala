@@ -1,6 +1,7 @@
 // vim: filetype=scala: tabstop=3: shiftwidth=3: noexpandtab
 package app.service
 
+import app.model.BuildSelection
 import app.model.ValidationResult
 import app.prolog.PrologGateway
 import app.ui.UiField
@@ -81,9 +82,7 @@ final class FakePrologGateway(
 		fields
 
 	override def validateBuild(
-										cpuId: String,
-										motherboardId: String,
-										ramId: String
+										selection: BuildSelection
 									): ValidationResult =
 		validationResult
 }

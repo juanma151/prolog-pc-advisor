@@ -20,3 +20,4 @@ Current version: `1.0.0`
 - [US-12 Application service](./US-12-application-service.md)
 - [US-13 Prolog suggestions](./US-13-prolog-suggestions.md)
 - [US-14 macOS packaging](./US-14-macos-packaging.md)
+- [US-15 Developer ID signing](./US-15-developer-id-signing.md)

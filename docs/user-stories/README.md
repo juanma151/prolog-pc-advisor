@@ -11,3 +11,4 @@
 - [US-09 Load options from Prolog](./US-09-load-options-from-prolog.md)
 - [US-10 Validate build](./US-10-validate-build.md)
 - [US-11 Validation messages](./US-11-validation-messages.md)
+- [US-12 Application service](./US-12-application-service.md)

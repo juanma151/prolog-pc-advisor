@@ -3,7 +3,11 @@ plugins {
 	scala
 	application
 	id("org.openjfx.javafxplugin") version "0.1.0"
+	id("org.beryx.runtime") version "2.0.1"
 }
+
+group = "org.hagane"
+version = "1.0.0"
 
 repositories {
 	mavenCentral()
@@ -46,9 +50,6 @@ java {
 
 application {
 	mainClass.set("app.Main")
-	applicationDefaultJvmArgs = listOf(
-		"-Djava.library.path=$jplLibDir"
-	)
 }
 
 tasks.withType<ScalaCompile>().configureEach {
@@ -60,4 +61,59 @@ tasks.withType<ScalaCompile>().configureEach {
 tasks.named<Test>("test") {
 	useJUnitPlatform()
 	systemProperty("java.library.path", jplLibDir)
+}
+
+val copyJplNativeLib by tasks.registering(Copy::class) {
+	from(jplLibDir)
+	include("libjpl.dylib")
+	into(layout.buildDirectory.dir("jpl-libs"))
+}
+
+runtime {
+	options.set(listOf(
+		"--strip-debug",
+		"--compress=2",
+		"--no-header-files",
+		"--no-man-pages"
+	))
+
+	modules.set(listOf(
+		"java.base",
+		"java.desktop",
+		"java.logging",
+		"java.sql",
+		"jdk.unsupported"
+	))
+
+	launcher {
+		jvmArgs = listOf(
+			"-Djava.library.path={{APPDIR}}/jpl-lib"
+		)
+	}
+
+	jpackage {
+		imageName = "PrologPcAdvisor"
+		installerName = "PrologPcAdvisor"
+		installerType = "app-image"
+		appVersion = project.version.toString()
+		description = "ScalaFX + SWI-Prolog + JPL demo application"
+	}
+}
+
+tasks.named("jpackageImage") {
+	dependsOn(copyJplNativeLib)
+
+	doLast {
+		val imageDir = layout.buildDirectory
+			.dir("jpackage/PrologPcAdvisor.app/Contents/app/jpl-lib")
+			.get()
+			.asFile
+
+		imageDir.mkdirs()
+
+		copy {
+			from(layout.buildDirectory.dir("jpl-libs"))
+			into(imageDir)
+		}
+	}
 }

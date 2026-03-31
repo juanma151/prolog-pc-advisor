@@ -87,7 +87,7 @@ runtime {
 
 	launcher {
 		jvmArgs = listOf(
-			"-Djava.library.path={{APPDIR}}/jpl-lib"
+			"-Djava.library.path={{BIN_DIR}}/app/jpl-lib"
 		)
 	}
 

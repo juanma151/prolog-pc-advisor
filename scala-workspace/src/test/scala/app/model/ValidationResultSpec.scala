@@ -13,6 +13,7 @@ class ValidationResultSpec extends AnyFunSuite {
 
 		assert(result.isValid)
 		assert(result.message == "Configuration is valid")
+		assert(result.suggestion.isEmpty)
 	}
 
 	test("ValidationResult should preserve invalid result") {
@@ -23,5 +24,24 @@ class ValidationResultSpec extends AnyFunSuite {
 
 		assert(!result.isValid)
 		assert(result.message == "Configuration is not valid")
+		assert(result.suggestion.isEmpty)
+	}
+
+	test("ValidationResult should preserve suggestion") {
+		val result = ValidationResult(
+			isValid = false,
+			message = "CPU and motherboard sockets are not compatible",
+			suggestion = Some(
+				ValidationSuggestion(
+					fieldId = "motherboard",
+					optionId = "b650_tomahawk",
+					optionLabel = "MSI MAG B650 Tomahawk"
+				)
+			)
+		)
+
+		assert(!result.isValid)
+		assert(result.suggestion.nonEmpty)
+		assert(result.suggestion.exists(_.fieldId == "motherboard"))
 	}
 }

@@ -1,11 +1,12 @@
 // vim: filetype=scala: tabstop=3: shiftwidth=3: noexpandtab
 package app.prolog
 
-import app.model.ValidationResult
+import app.model.{BuildSelection, ValidationResult, ValidationSuggestion}
 import app.ui.{UiField, UiOption}
 import org.jpl7.{Atom, Query, Term, Variable}
 
 import java.nio.file.Paths
+import scala.jdk.CollectionConverters.*
 
 final class JplPrologGateway extends PrologGateway {
 
@@ -29,45 +30,35 @@ final class JplPrologGateway extends PrologGateway {
 		}
 	}
 
-	// vim: filetype=scala: tabstop=3: shiftwidth=3: noexpandtab
-	override def validateBuild(
-										cpuId: String,
-										motherboardId: String,
-										ramId: String
-									): ValidationResult = {
+	override def validateBuild(selection: BuildSelection): ValidationResult = {
 		consultFile("catalog.pl")
 		consultFile("rules.pl")
 
-		val validQuery = new Query(
-			"valid_build",
-			Array[Term](
-				new Atom(cpuId),
-				new Atom(motherboardId),
-				new Atom(ramId)
-			)
-		)
+		val selectionTerms = buildSelectionTerms(selection)
 
-		val messageVariable = new Variable("Message")
-		val messageQuery = new Query(
-			"validation_message",
-			Array[Term](
-				new Atom(cpuId),
-				new Atom(motherboardId),
-				new Atom(ramId),
-				messageVariable
-			)
-		)
+		val validQuery = new Query("valid_build", selectionTerms)
 
 		val message =
-			if (messageQuery.hasSolution) {
-				messageQuery.oneSolution().get("Message").name
+			runSingleSolutionQuery(
+				functor = "validation_message",
+				variableName = "Message",
+				args = selectionTerms
+			).map(_("Message").name)
+				.getOrElse("Unknown validation result")
+
+		val isValid = validQuery.hasSolution
+
+		val suggestion =
+			if (isValid) {
+				None
 			} else {
-				"Unknown validation result"
+				loadSuggestion(selection)
 			}
 
 		ValidationResult(
-			isValid = validQuery.hasSolution,
-			message = message
+			isValid = isValid,
+			message = message,
+			suggestion = suggestion
 		)
 	}
 
@@ -89,23 +80,59 @@ final class JplPrologGateway extends PrologGateway {
 	}
 
 	private def loadOptionsForField(fieldId: String): Seq[UiOption] = {
-		val optionsQuery = new Query(
-			"field_options",
-			Array[Term](new Atom(fieldId), new Variable("Options"))
-		)
-
-		if (!optionsQuery.hasSolution) {
-			Seq.empty
-		} else {
-			val solution = optionsQuery.oneSolution()
-			val optionsList = solution.get("Options")
-
-			optionsList.listToTermArray().toSeq.map { optionTerm =>
+		runSingleSolutionQuery(
+			functor = "field_options",
+			variableName = "Options",
+			args = Array[Term](new Atom(fieldId))
+		).map { solution =>
+			solution("Options").listToTermArray().toSeq.map { optionTerm =>
 				UiOption(
 					id = optionTerm.arg(1).name,
 					label = optionTerm.arg(2).name
 				)
 			}
+		}.getOrElse(Seq.empty)
+	}
+
+	private def loadSuggestion(
+										selection: BuildSelection
+									): Option[ValidationSuggestion] = {
+		runSingleSolutionQuery(
+			functor = "suggest_build_fix",
+			variableName = "Suggestion",
+			args = buildSelectionTerms(selection)
+		).map { solution =>
+			val term = solution("Suggestion")
+
+			ValidationSuggestion(
+				fieldId = term.arg(1).name,
+				optionId = term.arg(2).name,
+				optionLabel = term.arg(3).name
+			)
 		}
 	}
+
+	private def runSingleSolutionQuery(
+													functor: String,
+													variableName: String,
+													args: Array[Term]
+												): Option[Map[String, Term]] = {
+		val variable = new Variable(variableName)
+		val query = new Query(functor, args :+ variable)
+
+		if (!query.hasSolution) {
+			None
+		} else {
+			Some(query.oneSolution().asScala.toMap)
+		}
+	}
+
+	private def buildSelectionTerms(
+												selection: BuildSelection
+											): Array[Term] =
+		Array[Term](
+			new Atom(selection.cpuId),
+			new Atom(selection.motherboardId),
+			new Atom(selection.ramId)
+		)
 }

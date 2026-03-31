@@ -12,3 +12,4 @@
 - [US-10 Validate build](./US-10-validate-build.md)
 - [US-11 Validation messages](./US-11-validation-messages.md)
 - [US-12 Application service](./US-12-application-service.md)
+- [US-13 Prolog suggestions](./US-13-prolog-suggestions.md)

@@ -2,6 +2,7 @@
 package app
 
 import app.prolog.JplPrologGateway
+import app.service.BuildAdvisorService
 import app.ui.{FormRenderer, UiOption}
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
@@ -11,31 +12,21 @@ import scalafx.scene.layout.VBox
 
 object Main extends JFXApp3 {
 	override def start(): Unit = {
-		val gateway = new JplPrologGateway()
-		val fields = gateway.loadUiFields()
+		val service = new BuildAdvisorService(new JplPrologGateway())
+		val fields = service.loadUiFields()
 		val renderedForm = FormRenderer.render(fields)
 
 		val resultLabel = new Label("Select components and validate")
 
 		val validateButton = new Button("Validate configuration") {
 			onAction = _ => {
-				val selectedCpu = selectedOption(renderedForm.comboBoxes("cpu"))
-				val selectedBoard = selectedOption(renderedForm.comboBoxes("motherboard"))
-				val selectedRam = selectedOption(renderedForm.comboBoxes("ram"))
+				val result = service.validateSelection(
+					selectedCpuId = selectedOption(renderedForm.comboBoxes("cpu")).map(_.id),
+					selectedMotherboardId = selectedOption(renderedForm.comboBoxes("motherboard")).map(_.id),
+					selectedRamId = selectedOption(renderedForm.comboBoxes("ram")).map(_.id)
+				)
 
-				(selectedCpu, selectedBoard, selectedRam) match {
-					case (Some(cpu), Some(board), Some(ram)) =>
-						val result = gateway.validateBuild(
-							cpu.id,
-							board.id,
-							ram.id
-						)
-
-						resultLabel.text = result.message
-
-					case _ =>
-						resultLabel.text = "Please select CPU, motherboard and RAM"
-				}
+				resultLabel.text = result.message
 			}
 		}
 
